@@ -25,7 +25,17 @@ export class CryptosService {
     // if not found in cache, fetching from API
     if (cryptos == null) {
       try {
-        cryptos = await this.coinCapApiService.getAssets();
+        const response = await this.coinCapApiService.getAssets();
+        cryptos = response.data['data'];
+        // adding an iconUrl to each crypto
+        if (cryptos && cryptos.length) {
+          cryptos = cryptos.map((v) => ({
+            ...v,
+            iconUrl: `https://assets.coincap.io/assets/icons/${v.symbol.toLowerCase()}@2x.png`,
+          }));
+        } else {
+          cryptos = [];
+        }
       } catch (err) {
         throw new ServiceUnavailableException(err.status, err.message);
       }
