@@ -34,4 +34,18 @@ export class CryptosService {
     }
     return cryptos;
   }
+
+  async findBySearchQuery(q: string): Promise<Crypto[]> {
+    // fetching all cryptos
+    const cryptos = await this.findAll();
+    // filtering by search query
+    return cryptos.filter((crypto) =>
+      Object.entries(crypto).some(
+        ([k, v]) =>
+          ['name', 'symbol'].some((item) => item == k) &&
+          v &&
+          String(v).toLowerCase().includes(q.toLowerCase()),
+      ),
+    );
+  }
 }
