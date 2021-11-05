@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, CacheModule } from '@nestjs/common';
 import { CryptosService } from './cryptos.service';
 import { CryptosController } from './cryptos.controller';
 import { CoinCapApiService } from './coincapapi.service';
@@ -10,6 +10,7 @@ import { HttpModule } from '@nestjs/axios';
       timeout: 3000,
       maxRedirects: 3,
     }),
+    CacheModule.register(),
   ],
   controllers: [CryptosController],
   providers: [CoinCapApiService, CryptosService],
