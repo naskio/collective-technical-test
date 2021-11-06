@@ -6,6 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // adding Global Prefix
   app.setGlobalPrefix('api');
+  app.enableCors();
   // adding Swagger
   const config = new DocumentBuilder()
     .setTitle('Cryptos APIs')
