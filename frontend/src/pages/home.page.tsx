@@ -62,6 +62,14 @@ export default function App() {
         }
     }, [search]);
 
+    // get live data every 12 seconds
+    useEffect(() => {
+        const interval = setInterval(() => {
+            void getCryptosBySearchQuery(setCryptos, errorHandler, search);
+        }, 12000);
+        return () => clearInterval(interval);
+    }, [search]);
+
     return (
         <>
             <Container maxWidth={"xl"}>
