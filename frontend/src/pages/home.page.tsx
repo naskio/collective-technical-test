@@ -14,13 +14,13 @@ import Crypto from "../types/crypto.type";
 import debounce from 'lodash/debounce';
 
 
-const getCryptosBySearchQuery = async (onSuccess: (cryptos: Crypto[]) => void, onError: (err: any) => void, query?: string): Promise<Crypto[]> => {
+const getCryptosBySearchQuery = async (onSuccess: (cryptos: Crypto[]) => void, onError: (err: any, showSnackbar: boolean) => void, query?: string): Promise<Crypto[]> => {
     try {
         const cryptos: Crypto[] = await CryptosService.getBySearchQuery(query);
         onSuccess(cryptos);
         return cryptos;
     } catch (err) {
-        onError(err);
+        onError(err, !!query);
         return [];
     }
 }
@@ -30,12 +30,12 @@ const debouncedGetCryptosBySearchQuery = debounce(getCryptosBySearchQuery, 500);
 export default function App() {
     const [search, setSearch] = useState<string>('');
     const [cryptos, setCryptos] = useState<Crypto[]>([]);
-    const firstUpdate = useRef(true);
+    const firstUpdate = useRef<boolean>(true);
     const {enqueueSnackbar} = useSnackbar();
 
     // error handler
     const errorHandler = useCallback(
-        (err: any) => {
+        (err: any, showSnackbar: boolean) => {
             let message;
             if (err?.message) {
                 message = err.message;
@@ -43,7 +43,7 @@ export default function App() {
                 message = "Network Error: Check server is running";
             }
             // show snackbar
-            if (firstUpdate.current) {
+            if (firstUpdate.current || showSnackbar) {
                 enqueueSnackbar(message, {
                     variant: 'error',
                 });
