@@ -6,7 +6,7 @@ class CryptoService {
         return http.get<Crypto[]>("/cryptos").then(response => response.data);
     }
 
-    findBySearchQuery(query: string) {
+    getBySearchQuery(query?: string) {
         return http.get<Crypto[]>(`/cryptos`, {
             params: {
                 q: query
