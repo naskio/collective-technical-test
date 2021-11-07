@@ -114,7 +114,7 @@ const columns: GridColDef[] = [
         minWidth: 120,
         flex: 1,
         renderCell: ({row}: GridCellParams) => (
-            <Box fontWeight="fontWeightBold"
+            <Box fontWeight="fontWeightBold" mr={2}
                  {...!row.changePercent24Hr ? {} : (row.changePercent24Hr > 0 ? {color: green[500]} : {color: red[500]})}
             >
                 {`${formatPrice(row.changePercent24Hr)} %`}
