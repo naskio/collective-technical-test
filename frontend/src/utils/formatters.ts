@@ -1,5 +1,5 @@
-export function formatPrice(n: number | null, currency?: string): string {
-    if (n === null || n === undefined) {
+export function formatPrice(n: number | undefined | null, currency?: string): string {
+    if (n === null || n === undefined || isNaN(n)) {
         return '';
     }
     if (currency) {

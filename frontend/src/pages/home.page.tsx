@@ -22,7 +22,7 @@ export default function App() {
 
     return (
         <Container maxWidth={"xl"}>
-            <Box mt={8} mb={8}>
+            <Box mt={4} mb={4}>
                 <CryptosTable cryptos={cryptos}/>
             </Box>
         </Container>

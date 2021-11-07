@@ -1,87 +1,147 @@
 import * as React from "react";
 import {
-    Avatar, Box,
+    Avatar,
+    Box,
     Paper,
     Stack,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
     Typography
 } from "@mui/material";
 import {green, red} from "@mui/material/colors";
 import {formatPrice} from "../utils/formatters";
 import Crypto from "../types/crypto.type";
+import {
+    DataGrid,
+    GridColDef,
+    GridValueFormatterParams,
+    GridCellParams,
+} from '@mui/x-data-grid';
+
+const formatPriceUsd = (row: GridValueFormatterParams) => formatPrice(Number(row.value), 'USD');
+
+const columns: GridColDef[] = [
+    {
+        field: 'id',
+        headerName: 'ID',
+        hide: true,
+    },
+    {
+        field: 'rank',
+        headerName: 'Rank',
+        align: "center",
+        headerAlign: "center",
+        resizable: false,
+        minWidth: 80,
+        flex: 0.5,
+    },
+    {
+        field: 'name',
+        headerName: 'Name',
+        align: "left",
+        headerAlign: "left",
+        resizable: false,
+        minWidth: 150,
+        flex: 1.2,
+        renderCell: ({row}: GridCellParams) => (
+            <Stack direction="row" spacing={2}>
+                <Avatar alt={row.name} src={row.iconUrl}/>
+                <Stack>
+                    <Typography variant="body1">
+                        {row.name}
+                    </Typography>
+                    <Typography variant="caption">
+                        {row.symbol}
+                    </Typography>
+                </Stack>
+            </Stack>
+        ),
+    },
+    {
+        field: 'priceUsd',
+        headerName: 'Price',
+        align: "right",
+        headerAlign: "right",
+        resizable: false,
+        minWidth: 120,
+        flex: 1,
+        valueFormatter: formatPriceUsd,
+    },
+    {
+        field: 'marketCapUsd',
+        headerName: 'Market Cap',
+        align: "right",
+        headerAlign: "right",
+        resizable: false,
+        minWidth: 140,
+        flex: 1.1,
+        valueFormatter: formatPriceUsd,
+    },
+    {
+        field: 'vwap24Hr',
+        headerName: 'VWAP (24Hr)',
+        align: "right",
+        headerAlign: "right",
+        resizable: false,
+        minWidth: 120,
+        flex: 1,
+        valueFormatter: formatPriceUsd,
+    },
+    {
+        field: 'supply',
+        headerName: 'Supply',
+        align: "right",
+        headerAlign: "right",
+        resizable: false,
+        minWidth: 140,
+        flex: 1.1,
+        valueFormatter: (row: GridValueFormatterParams) => formatPrice(Number(row.value)),
+    },
+    {
+        field: 'volumeUsd24Hr',
+        headerName: 'Volume (24Hr)',
+        align: "right",
+        headerAlign: "right",
+        resizable: false,
+        minWidth: 140,
+        flex: 1.1,
+        valueFormatter: formatPriceUsd,
+    },
+    {
+        field: 'changePercent24Hr',
+        headerName: 'Change (24Hr)',
+        align: "right",
+        headerAlign: "right",
+        resizable: false,
+        minWidth: 120,
+        flex: 1,
+        renderCell: ({row}: GridCellParams) => (
+            <Box fontWeight="fontWeightBold"
+                 {...!row.changePercent24Hr ? {} : (row.changePercent24Hr > 0 ? {color: green[500]} : {color: red[500]})}
+            >
+                {`${formatPrice(row.changePercent24Hr)} %`}
+            </Box>
+        ),
+    },
+];
+
 
 function CryptosTable({cryptos}: { cryptos: Crypto[] }) {
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{minWidth: 650}}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell align="center">Rank</TableCell>
-                        <TableCell align="left">Name</TableCell>
-                        <TableCell align="right">Price</TableCell>
-                        <TableCell align="right">Market Cap</TableCell>
-                        <TableCell align="right">VWAP (24Hr)</TableCell>
-                        <TableCell align="right">Supply</TableCell>
-                        <TableCell align="right">Volume (24Hr)</TableCell>
-                        <TableCell align="right">Change (24Hr)</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {cryptos.map(({
-                                      changePercent24Hr,
-                                      iconUrl,
-                                      id,
-                                      marketCapUsd,
-                                      name,
-                                      priceUsd,
-                                      rank,
-                                      supply,
-                                      symbol,
-                                      volumeUsd24Hr,
-                                      vwap24Hr
-                                  }) => (
-                        <TableRow
-                            key={id}
-                            sx={{'&:last-child td, &:last-child th': {border: 0}}}
-                        >
-                            <TableCell component="th" scope="row" align="center">
-                                {rank}
-                            </TableCell>
-                            <TableCell align="left">
-                                <Stack direction="row" spacing={2}>
-                                    <Avatar alt={name} src={iconUrl}/>
-                                    <Stack>
-                                        <Typography variant="body1">
-                                            {name}
-                                        </Typography>
-                                        <Typography variant="caption">
-                                            {symbol}
-                                        </Typography>
-                                    </Stack>
-                                </Stack>
-                            </TableCell>
-                            <TableCell align="right">{formatPrice(priceUsd, "USD")}</TableCell>
-                            <TableCell align="right">{formatPrice(marketCapUsd, "USD")}</TableCell>
-                            <TableCell align="right">{formatPrice(vwap24Hr, "USD")}</TableCell>
-                            <TableCell align="right">{formatPrice(supply)}</TableCell>
-                            <TableCell align="right">{formatPrice(volumeUsd24Hr, "USD")}</TableCell>
-                            <TableCell align="right">
-                                <Box fontWeight="fontWeightBold"
-                                     {...!changePercent24Hr ? {} : (changePercent24Hr > 0 ? {color: green[500]} : {color: red[500]})}
-                                >
-                                    {`${formatPrice(changePercent24Hr)} %`}
-                                </Box>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>)
+        <>
+            <Paper sx={{minWidth: 650}}>
+                <DataGrid
+                    autoHeight
+                    rows={cryptos}
+                    columns={columns}
+                    pageSize={20}
+                    rowsPerPageOptions={[20]}
+                    density={"standard"}
+                    disableSelectionOnClick
+                    disableColumnFilter
+                    disableColumnMenu
+                />
+            </Paper>
+        </>
+    )
 }
 
 export default CryptosTable;
