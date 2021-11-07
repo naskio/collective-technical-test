@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  # The name of the service
+  backend:
+    restart: always
+    build:
+      context: ./backend
+    command: [ "yarn","run","start:prod" ]
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      IS_DOCKER: ${IS_DOCKER}
+    ports:
+      - ${NODE_PORT}:3000
+
+  frontend: # or we can build React App and serve it from NestJS
+    restart: always
+    build:
+      context: ./frontend
+    command: [ "nginx", "-g", "daemon off;" ]
+    environment:
+      REACT_APP_IS_DOCKER: ${IS_DOCKER}
+      REACT_APP_BACKEND_URL: 'http://${NODE_HOST}:${NODE_PORT}'
+    ports:
+      - ${REACT_PORT}:3001
+    links:
+      - backend:backend
+    depends_on:
+      - backend
