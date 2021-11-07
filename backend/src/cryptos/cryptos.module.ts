@@ -13,6 +13,7 @@ import { HttpModule } from '@nestjs/axios';
     CacheModule.register(),
   ],
   controllers: [CryptosController],
+  exports: [CryptosService],
   providers: [CoinCapApiService, CryptosService],
 })
 export class CryptosModule {}

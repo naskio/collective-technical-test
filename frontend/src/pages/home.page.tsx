@@ -67,11 +67,11 @@ export default function App() {
         }
     }, [search, errorHandler]);
 
-    // get live data every 12 seconds
+    // get live data every 10 seconds
     useEffect(() => {
         const interval = setInterval(() => {
             void getCryptosBySearchQuery(setCryptos, errorHandler, search);
-        }, 12000);
+        }, 10000);
         return () => clearInterval(interval);
     }, [search, errorHandler]);
 

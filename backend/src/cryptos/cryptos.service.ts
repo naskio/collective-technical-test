@@ -18,34 +18,40 @@ export class CryptosService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
+  async fetchFromApiThenCacheResult(): Promise<Crypto[]> {
+    // fetching from api
+    const response = await this.coinCapApiService.getAssets();
+    // transforming
+    let cryptos: Crypto[] = response.data['data'].map((v) =>
+      plainToClass(CryptoCurrency, v, { enableImplicitConversion: true }),
+    );
+    if (cryptos && cryptos.length) {
+      // adding an iconUrl to each crypto
+      cryptos = cryptos.map((v) => ({
+        ...v,
+        iconUrl: `https://assets.coincap.io/assets/icons/${v.symbol.toLowerCase()}@2x.png`,
+      }));
+      // caching the result for 10s
+      await this.cacheManager.set(this.assetsCacheKey, cryptos, { ttl: 10 });
+    } else {
+      // empty response
+      throw new Error('Empty cryptos array');
+    }
+    return cryptos;
+  }
+
   async findAll(): Promise<Crypto[]> {
     // fetching from cache
     let cryptos: Crypto[] | null = await this.cacheManager.get<Crypto[]>(
       this.assetsCacheKey,
     );
-    // if not found in cache, fetching from API
+    // if not found in cache, fetching from API and cache
     if (cryptos == null) {
       try {
-        // fetching
-        const response = await this.coinCapApiService.getAssets();
-        // transforming
-        cryptos = response.data['data'].map((v) =>
-          plainToClass(CryptoCurrency, v, { enableImplicitConversion: true }),
-        );
-        // adding an iconUrl to each crypto
-        if (cryptos && cryptos.length) {
-          cryptos = cryptos.map((v) => ({
-            ...v,
-            iconUrl: `https://assets.coincap.io/assets/icons/${v.symbol.toLowerCase()}@2x.png`,
-          }));
-        } else {
-          cryptos = [];
-        }
+        cryptos = await this.fetchFromApiThenCacheResult();
       } catch (err) {
         throw new ServiceUnavailableException(err.status, err.message);
       }
-      // caching the result for 10s
-      await this.cacheManager.set(this.assetsCacheKey, cryptos, { ttl: 10 });
     }
     return cryptos;
   }
