@@ -7,6 +7,7 @@ import {
     Typography
 } from "@mui/material";
 import {green, red} from "@mui/material/colors";
+import {styled} from '@mui/material/styles';
 import {formatPrice} from "../utils/formatters";
 import Crypto from "../types/crypto.type";
 import {
@@ -15,6 +16,13 @@ import {
     GridValueFormatterParams,
     GridCellParams,
 } from '@mui/x-data-grid';
+
+const StyledDataGrid = styled(DataGrid)`
+  &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
+  &.MuiDataGrid-root .MuiDataGrid-cell:focus {
+    outline: none;
+  }
+`;
 
 const formatPriceUsd = (row: GridValueFormatterParams) => formatPrice(Number(row.value), 'USD');
 
@@ -128,7 +136,7 @@ function CryptosTable({cryptos}: { cryptos: Crypto[] }) {
     return (
         <>
             <Paper sx={{minWidth: 650}}>
-                <DataGrid
+                <StyledDataGrid
                     autoHeight
                     rows={cryptos}
                     columns={columns}
@@ -138,6 +146,8 @@ function CryptosTable({cryptos}: { cryptos: Crypto[] }) {
                     disableSelectionOnClick
                     disableColumnFilter
                     disableColumnMenu
+                    disableColumnSelector
+                    disableDensitySelector
                 />
             </Paper>
         </>

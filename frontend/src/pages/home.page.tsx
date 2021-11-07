@@ -1,10 +1,12 @@
 import * as React from 'react';
-import {useEffect, useState, useRef} from "react";
+import {useEffect, useState, useRef, useCallback} from "react";
 import {
     Container,
     Box,
-    TextField, InputAdornment, Snackbar, Alert,
+    TextField,
+    InputAdornment,
 } from '@mui/material';
+import {useSnackbar} from 'notistack';
 import {SearchOutlined as SearchIcon} from '@mui/icons-material';
 import CryptosTable from "../components/cryptos.table";
 import CryptosService from '../services/cryptos.service';
@@ -28,39 +30,42 @@ const debouncedGetCryptosBySearchQuery = debounce(getCryptosBySearchQuery, 500);
 export default function App() {
     const [search, setSearch] = useState<string>('');
     const [cryptos, setCryptos] = useState<Crypto[]>([]);
-    const [openSnackbar, setOpenSnackbar] = React.useState<boolean>(false);
-    const [errMessage, setErrMessage] = React.useState<string>("");
     const firstUpdate = useRef(true);
-    // snackbar close handler
-    const handleCloseSnackbar = (event?: React.SyntheticEvent, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenSnackbar(false);
-    };
+    const {enqueueSnackbar} = useSnackbar();
+
     // error handler
-    const errorHandler = (err: any) => {
-        if (err?.message) {
-            setErrMessage(err.message);
-        } else {
-            setErrMessage("Network Error: Check server is running");
-        }
-        setOpenSnackbar(true);
-    }
+    const errorHandler = useCallback(
+        (err: any) => {
+            let message;
+            if (err?.message) {
+                message = err.message;
+            } else {
+                message = "Network Error: Check server is running";
+            }
+            // show snackbar
+            if (firstUpdate.current) {
+                enqueueSnackbar(message, {
+                    variant: 'error',
+                });
+            }
+        },
+        [enqueueSnackbar],
+    );
+
 
     // get data on mount
     useEffect(() => {
         getCryptosBySearchQuery(setCryptos, errorHandler).finally(() => {
             firstUpdate.current = false;
         });
-    }, []);
+    }, [errorHandler]);
 
     // fetch data on search
     useEffect(() => {
         if (!firstUpdate.current) {
             debouncedGetCryptosBySearchQuery(setCryptos, errorHandler, search);
         }
-    }, [search]);
+    }, [search, errorHandler]);
 
     // get live data every 12 seconds
     useEffect(() => {
@@ -68,39 +73,31 @@ export default function App() {
             void getCryptosBySearchQuery(setCryptos, errorHandler, search);
         }, 12000);
         return () => clearInterval(interval);
-    }, [search]);
+    }, [search, errorHandler]);
 
     return (
-        <>
-            <Container maxWidth={"xl"}>
-                <Box my={4}>
-                    <TextField
-                        margin="normal"
-                        fullWidth
-                        type="search"
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <SearchIcon/>
-                                </InputAdornment>
-                            ),
-                        }}
-                        placeholder="Search"
-                        label="Search"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                </Box>
-                <Box my={4}>
-                    <CryptosTable cryptos={cryptos}/>
-                </Box>
-            </Container>
-            <Snackbar open={openSnackbar} autoHideDuration={3000}
-                      onClose={handleCloseSnackbar} anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}>
-                <Alert onClose={handleCloseSnackbar} severity="error">
-                    {errMessage}
-                </Alert>
-            </Snackbar>
-        </>
+        <Container maxWidth={"xl"}>
+            <Box my={4}>
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    type="search"
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon/>
+                            </InputAdornment>
+                        ),
+                    }}
+                    placeholder="Search"
+                    label="Search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </Box>
+            <Box my={4}>
+                <CryptosTable cryptos={cryptos}/>
+            </Box>
+        </Container>
     )
 };
