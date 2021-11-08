@@ -1,6 +1,6 @@
 # collective-technical-test
 
-Technical test for Collective.work using NestJS and ReactJS.
+Technical test for Collective.Work using NestJS and ReactJS.
 
 ## Description
 
@@ -40,13 +40,16 @@ in order to run the project without Docker, please follow the instructions in bo
 
 ## Configuration
 
-cp ```.env_example``` to ```.env```
+Start by setting the environment variables:
 
-```shell
-cp .env_example .env
-```
+- cp ```.env_example``` to ```.env``` using the following command:
+    ```shell
+    cp .env_example .env
+    ```
 
 ## Build
+
+Once the environment variables are set, you can build the project by running the following command:
 
 ```shell
 docker-compose build
@@ -54,17 +57,19 @@ docker-compose build
 
 ## Run
 
+to run the project, you can run the following command:
+
 ```shell
 docker-compose up -d 
 ```
 
-in order to stop the container:
+in order to stop the containers, you can run the following command:
 
 ```shell
 docker-compose down
 ```
 
-## Testing
+## Usage
 
 - The Swagger documentation is available at: [http://localhost:3000/](http://localhost:3000/)
 - The SPA s are available at: [http://localhost:3001/](http://localhost:3001/)
