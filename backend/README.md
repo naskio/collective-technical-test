@@ -1,51 +1,51 @@
-# NestJS Project
+# Collective - Technical test [backend]
 
-## Description
+Using NestJS and TypeScript
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Requirements
+
+- Node.js 14.18.0 or higher
+- yarn
 
 ## Installation
 
+Start by building the project with the following command:
+
 ```bash
-$ npm install
+$ yarn install
 ```
 
-## Running the app
+## Run
+
+to run the application, you can use one of the following commands:
 
 ```bash
 # development
-$ npm run start
+$ yarn run start
 
 # watch mode
-$ npm run start:dev
+$ yarn run start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn run start:prod
 ```
+
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser using Swagger.
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn run test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn run test:cov
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is MIT licensed.
+- Author - [Mehdi Nassim KHODJA](https://nask.io)
+- Twitter - [@nestframework](https://twitter.com/naskdev)

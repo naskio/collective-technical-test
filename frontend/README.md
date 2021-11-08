@@ -2,6 +2,19 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Requirements
+
+- Node.js 14.18.0 or higher
+- yarn
+
+## Installation
+
+Start by installing the dependencies:
+
+```shell
+yarn install
+```
+
 ## Run
 
 To run the project:
@@ -29,5 +42,5 @@ information.
 ## Build
 
 ```shell
-`yarn build`
+yarn build
 ```
