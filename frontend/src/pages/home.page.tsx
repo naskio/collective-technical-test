@@ -30,6 +30,7 @@ const debouncedGetCryptosBySearchQuery = debounce(getCryptosBySearchQuery, 500);
 export default function App() {
     const [search, setSearch] = useState<string>('');
     const [cryptos, setCryptos] = useState<Crypto[]>([]);
+    const [variations, setVariations] = useState<object>({});
     const firstUpdate = useRef<boolean>(true);
     const {enqueueSnackbar} = useSnackbar();
 
@@ -51,29 +52,58 @@ export default function App() {
         },
         [enqueueSnackbar],
     );
+    // success handler
+    const successHandler = useCallback(
+        (cryptos: Crypto[]) => {
+            setCryptos(oldCryptos => {
+                const oldPrices = oldCryptos.reduce((acc: any, curr: Crypto) => {
+                    acc[curr.id] = curr.priceUsd;
+                    return acc;
+                }, {});
+                const newVariations: any = {}
+                cryptos.forEach(crypto => {
+                    const oldPrice = oldPrices[crypto.id];
+                    if (oldPrice) {
+                        const diff = crypto.priceUsd - oldPrice;
+                        if (diff > 0.0001) {
+                            newVariations[crypto.id] = 'increasing';
+                        } else if (diff < -0.0001) {
+                            newVariations[crypto.id] = 'decreasing';
+                        }
+                    }
+                });
+                setVariations(newVariations);
+                setTimeout(() => {
+                    setVariations({});
+                }, 1000);
+                return cryptos;
+            });
+        },
+        [],
+    );
 
 
     // get data on mount
     useEffect(() => {
-        getCryptosBySearchQuery(setCryptos, errorHandler).finally(() => {
+        getCryptosBySearchQuery(successHandler, errorHandler).finally(() => {
             firstUpdate.current = false;
         });
-    }, [errorHandler]);
+    }, [errorHandler, successHandler]);
 
     // fetch data on search
     useEffect(() => {
         if (!firstUpdate.current) {
-            debouncedGetCryptosBySearchQuery(setCryptos, errorHandler, search);
+            debouncedGetCryptosBySearchQuery(successHandler, errorHandler, search);
         }
-    }, [search, errorHandler]);
+    }, [search, errorHandler, successHandler]);
 
-    // get live data every 10 seconds
+    // get live data every 5 seconds
     useEffect(() => {
         const interval = setInterval(() => {
-            void getCryptosBySearchQuery(setCryptos, errorHandler, search);
-        }, 10000);
+            void getCryptosBySearchQuery(successHandler, errorHandler, search);
+        }, 5000);
         return () => clearInterval(interval);
-    }, [search, errorHandler]);
+    }, [search, errorHandler, successHandler]);
 
     return (
         <Container maxWidth={"xl"}>
@@ -96,7 +126,7 @@ export default function App() {
                 />
             </Box>
             <Box my={4}>
-                <CryptosTable cryptos={cryptos}/>
+                <CryptosTable cryptos={cryptos} variations={variations}/>
             </Box>
         </Container>
     )

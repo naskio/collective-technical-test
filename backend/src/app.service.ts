@@ -10,7 +10,7 @@ export class AppService {
     return 'Hello World!';
   }
 
-  @Interval(10000)
+  @Interval(5000)
   async getLatestCryptosJob() {
     let err;
     let maxRetry = 3;

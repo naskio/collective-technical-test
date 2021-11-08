@@ -7,7 +7,7 @@ import {
     Typography
 } from "@mui/material";
 import {green, red} from "@mui/material/colors";
-import {styled} from '@mui/material/styles';
+import {styled, alpha} from '@mui/material/styles';
 import {formatPrice} from "../utils/formatters";
 import Crypto from "../types/crypto.type";
 import {
@@ -17,10 +17,19 @@ import {
     GridCellParams,
 } from '@mui/x-data-grid';
 
+
 const StyledDataGrid = styled(DataGrid)`
   &.MuiDataGrid-root .MuiDataGrid-columnHeader:focus,
   &.MuiDataGrid-root .MuiDataGrid-cell:focus {
     outline: none;
+  }
+
+  &.MuiDataGrid-root .MuiDataGrid-row--decreasing {
+    background-color: ${alpha(red[100], 0.4)};
+  }
+
+  &.MuiDataGrid-root .MuiDataGrid-row--increasing {
+    background-color: ${alpha(green[100], 0.4)};
   }
 `;
 
@@ -132,7 +141,7 @@ const columns: GridColDef[] = [
 ];
 
 
-function CryptosTable({cryptos}: { cryptos: Crypto[] }) {
+function CryptosTable({cryptos, variations}: { cryptos: Crypto[], variations: any }) {
     return (
         <>
             <Paper sx={{minWidth: 650}}>
@@ -148,6 +157,13 @@ function CryptosTable({cryptos}: { cryptos: Crypto[] }) {
                     disableColumnMenu
                     disableColumnSelector
                     disableDensitySelector
+                    getRowClassName={(params) => {
+                        if (params.id in variations) {
+                            return `MuiDataGrid-row--${variations[params.id]}`;
+                        } else {
+                            return '';
+                        }
+                    }}
                 />
             </Paper>
         </>
